@@ -1,3 +1,4 @@
+use argh::FromArgs;
 use bip39::{Mnemonic, Language};
 use bitcoin::{
     network::constants::Network,
@@ -5,7 +6,6 @@ use bitcoin::{
     secp256k1::{Secp256k1},
     util::{base58},
 };
-use clap::Parser;
 use std::str::FromStr;
 
 const ZPRV: [u8; 4] = [0x02, 0xAA, 0x7A, 0x99];
@@ -38,29 +38,32 @@ fn specter_derivation_path(derivation_path: &DerivationPath) -> String {
     derivation_path_string.replace("'", "h").replacen("m/", "", 1)
 }
 
-/// HumanRng - Don't Trust Your Random Number Generator
-#[derive(Parser)]
-#[clap(author, version, about, long_about = None)]
-struct Args {
-    /// First words of the mnemonic
-    #[clap(short, long)]
-    words: String,
+fn default_checksum() -> usize {
+    0
+}
 
-    /// Selects testnet
-    #[clap(short, long)]
+#[derive(FromArgs)]
+/// HumanRng - Don't Trust Your Random Number Generator
+struct Args {
+    /// selects testnet
+    #[argh(switch, short='t')]
     testnet: bool,
 
-    /// Enables verbose output
-    #[clap(short, long)]
+    /// enables verbose output
+    #[argh(switch, short='v')]
     verbose: bool,
 
-    /// Checksum word index to select
-    #[clap(short, long, default_value_t=0)]
+    /// checksum word index to select
+    #[argh(option, default="default_checksum()", short='c')]
     checksum: usize,
+
+    /// first words of the mnemonic
+    #[argh(option)]
+    words: String,
 }
 
 fn main() {
-    let args = Args::parse();
+    let args: Args = argh::from_env();
 
     let first_words = args.words.trim();
     let mut checksum_words: Vec<&str> = Vec::new();

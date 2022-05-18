@@ -8,7 +8,7 @@ edition = "2021"
 [dependencies]
 bip39 = { version = "1.0.1" }
 bitcoin = { version = "0.28.0" }
-clap = { version = "3.1.12", features = ["derive"] }
+argh = { version = "0.1.7" }
 
 [profile.release]
 opt-level = "s"
